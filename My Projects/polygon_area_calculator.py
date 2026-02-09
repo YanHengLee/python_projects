@@ -1,75 +1,100 @@
 class Rectangle:
+    """
+    Represents a rectangle defined by its width and height.
+    Provides methods to calculate geometric properties and
+    display the shape using text.
+    """
+
     def __init__(self, width, height):
+        # Initialize rectangle dimensions
         self.width = width
         self.height = height
 
-    # set new width
     def set_width(self, new_width):
+        """Set a new width for the rectangle."""
         self.width = new_width
 
-    # set new height
     def set_height(self, new_height):
+        """Set a new height for the rectangle."""
         self.height = new_height
 
     def get_area(self):
-        area = self.width * self.height
-        return area
+        """Return the area of the rectangle."""
+        return self.width * self.height
 
     def get_perimeter(self):
-        perm = 2 * self.width + 2 * self.height
-        return perm
+        """Return the perimeter of the rectangle."""
+        return 2 * self.width + 2 * self.height
 
     def get_diagonal(self):
-        diag = (self.width**2 + self.height**2)**0.5
-        return diag
+        """Return the length of the rectangle's diagonal."""
+        return (self.width ** 2 + self.height ** 2) ** 0.5
 
-    # make the picture out of "*" and get the picture of the shape
     def get_picture(self):
-        pic = ""
+        """
+        Return a string representation of the rectangle
+        using '*' characters.
+
+        If the width or height is greater than 50, a message
+        is returned instead to prevent excessive output.
+        """
         if self.width > 50 or self.height > 50:
             return "Too big for picture."
-        else:
-            stars = "*" * self.width
-            for i in range(self.height):
-                pic = stars + "\n" + pic
-            return pic
 
-    # the amount of other shapes that could be stored inside of this rectangle
-    # if this rect is smaller than the other shape just return 0
+        pic = ""
+        stars = "*" * self.width
+        for _ in range(self.height):
+            pic = stars + "\n" + pic
+        return pic
+
     def get_amount_inside(self, shape):
-        ans = 0
+        """
+        Return the number of times another shape can fit
+        inside this rectangle based on area comparison.
+
+        If the other shape is larger, return 0.
+        """
         if self.get_area() > shape.get_area():
-            ans += self.get_area() / shape.get_area()
-            return int(ans)
-        else:
-            return 0
+            return int(self.get_area() / shape.get_area())
+        return 0
 
     def __str__(self):
-        string = f"Rectangle(width={self.width}, height={self.height})"
-        return string
+        """Return a string representation of the rectangle."""
+        return f"Rectangle(width={self.width}, height={self.height})"
 
 
-# a subclass of Rect
 class Square(Rectangle):
+    """
+    Represents a square, which is a special type of rectangle
+    where all sides are equal.
+    """
+
     def __init__(self, side):
+        # Initialize square with equal width and height
         self.width = side
         self.height = side
 
-    # set new square side length
     def set_side(self, new_side):
+        """Set a new side length for the square."""
         self.width = new_side
         self.height = new_side
 
-    # set new width but change the height as well bcs it's a square(same as above)
     def set_width(self, new_side):
+        """
+        Set a new width for the square.
+        Height is updated as well to maintain square properties.
+        """
         self.width = new_side
         self.height = new_side
 
-    # set new height and width(same as above)
     def set_height(self, new_side):
+        """
+        Set a new height for the square.
+        Width is updated as well to maintain square properties.
+        """
         self.width = new_side
         self.height = new_side
 
     def __str__(self):
-        string = f"Square(side={self.width})"
-        return string
+        """Return a string representation of the square."""
+        return f"Square(side={self.width})"
