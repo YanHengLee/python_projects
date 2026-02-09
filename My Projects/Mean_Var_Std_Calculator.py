@@ -2,16 +2,36 @@ import numpy as np
 
 
 def calculate(list):
-    # first create an array using numpy
+    """
+    Calculate mean, variance, standard deviation, max, min, and sum
+    for a 3x3 matrix created from a list of nine numbers.
+
+    The calculations are performed along:
+    - Columns (axis=0)
+    - Rows (axis=1)
+    - The entire matrix
+
+    Parameters:
+        list (list): A list containing exactly nine numerical values.
+
+    Returns:
+        dict: A dictionary containing statistical calculations.
+    """
+
+    # ------------------------------------------------
+    # Convert input list into a NumPy array
+    # ------------------------------------------------
     arr3 = np.array(list)
 
-    # then try if the array can be reshape to 3X3 matrix
+    # Ensure the list can be reshaped into a 3x3 matrix
     try:
-        arr3 = np.array(list).reshape(-1, 3)
-    except:
-        raise ValueError ("List must contain nine numbers.")
+        arr3 = arr3.reshape(3, 3)
+    except ValueError:
+        raise ValueError("List must contain nine numbers.")
 
-    # lists for every calculation
+    # ------------------------------------------------
+    # Initialize containers for results
+    # ------------------------------------------------
     mean = []
     variance = []
     standard_deviation = []
@@ -19,66 +39,82 @@ def calculate(list):
     min = []
     sum = []
 
-    # mean
-    mean1 = arr3.mean(axis=0) # first calculate axis zero(columns) left-right
-    mean2 = arr3.mean(axis=1) # then calculate axis one(rows) up-down
-    meanAll = arr3.mean() # lastly calculate the whole list
-    # then change them into list and append it to each lists above
-    mean.append(mean1.tolist())
-    mean.append(mean2.tolist())
-    mean.append(meanAll)
+    # ------------------------------------------------
+    # Mean calculations
+    # ------------------------------------------------
+    mean_columns = arr3.mean(axis=0)   # Column-wise mean
+    mean_rows = arr3.mean(axis=1)      # Row-wise mean
+    mean_all = arr3.mean()             # Overall mean
 
-    # everything below is the same as the above
+    mean.append(mean_columns.tolist())
+    mean.append(mean_rows.tolist())
+    mean.append(mean_all)
 
-    # variance
-    variance1 = arr3.var(axis=0)
-    variance2 = arr3.var(axis=1)
-    varianceAll = arr3.var()
-    variance.append(variance1.tolist())
-    variance.append(variance2.tolist())
-    variance.append(varianceAll)
+    # ------------------------------------------------
+    # Variance calculations
+    # ------------------------------------------------
+    var_columns = arr3.var(axis=0)
+    var_rows = arr3.var(axis=1)
+    var_all = arr3.var()
 
-    #standard deviation
-    standard_deviation1 = arr3.std(axis=0)
-    standard_deviation2 = arr3.std(axis=1)
-    standard_deviationAll = arr3.std()
-    standard_deviation.append(standard_deviation1.tolist())
-    standard_deviation.append(standard_deviation2.tolist())
-    standard_deviation.append(standard_deviationAll)
+    variance.append(var_columns.tolist())
+    variance.append(var_rows.tolist())
+    variance.append(var_all)
 
-    # max
-    max1 = arr3.max(axis=0)
-    max2 = arr3.max(axis=1)
-    maxAll = arr3.max()
-    max.append(max1.tolist())
-    max.append(max2.tolist())
-    max.append(maxAll)
+    # ------------------------------------------------
+    # Standard deviation calculations
+    # ------------------------------------------------
+    std_columns = arr3.std(axis=0)
+    std_rows = arr3.std(axis=1)
+    std_all = arr3.std()
 
-    # min
-    min1 = arr3.min(axis=0)
-    min2 = arr3.min(axis=1)
-    minAll = arr3.min()
-    min.append(min1.tolist())
-    min.append(min2.tolist())
-    min.append(minAll)
+    standard_deviation.append(std_columns.tolist())
+    standard_deviation.append(std_rows.tolist())
+    standard_deviation.append(std_all)
 
-    # sum
-    sum1 = arr3.sum(axis=0)
-    sum2 = arr3.sum(axis=1)
-    sumAll = arr3.sum()
-    sum.append(sum1.tolist())
-    sum.append(sum2.tolist())
-    sum.append(sumAll)
+    # ------------------------------------------------
+    # Maximum value calculations
+    # ------------------------------------------------
+    max_columns = arr3.max(axis=0)
+    max_rows = arr3.max(axis=1)
+    max_all = arr3.max()
 
-    # make the lists above into values
+    max.append(max_columns.tolist())
+    max.append(max_rows.tolist())
+    max.append(max_all)
+
+    # ------------------------------------------------
+    # Minimum value calculations
+    # ------------------------------------------------
+    min_columns = arr3.min(axis=0)
+    min_rows = arr3.min(axis=1)
+    min_all = arr3.min()
+
+    min.append(min_columns.tolist())
+    min.append(min_rows.tolist())
+    min.append(min_all)
+
+    # ------------------------------------------------
+    # Sum calculations
+    # ------------------------------------------------
+    sum_columns = arr3.sum(axis=0)
+    sum_rows = arr3.sum(axis=1)
+    sum_all = arr3.sum()
+
+    sum.append(sum_columns.tolist())
+    sum.append(sum_rows.tolist())
+    sum.append(sum_all)
+
+    # ------------------------------------------------
+    # Combine all calculations into a dictionary
+    # ------------------------------------------------
     calculations = {
-        'mean': mean,
-        'variance': variance,
-        'standard deviation': standard_deviation,
-        'max': max,
-        'min': min,
-        'sum': sum
+        "mean": mean,
+        "variance": variance,
+        "standard deviation": standard_deviation,
+        "max": max,
+        "min": min,
+        "sum": sum,
     }
 
-    # lastly print it out as a dict
     return calculations
