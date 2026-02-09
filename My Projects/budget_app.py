@@ -1,130 +1,185 @@
 class Category:
+    """
+    A budget category that tracks deposits, withdrawals, and transfers.
+    """
+
     def __init__(self, name):
+        """
+        Initialize a budget category.
+
+        Parameters:
+            name (str): Name of the budget category.
+        """
         self.name = name
         self.ledger = []
         self.total_amount = 0
         self.withdraw_amount = 0
 
-    # to check if theres enough funds
+    # ------------------------------------------------
+    # Utility methods
+    # ------------------------------------------------
     def check_funds(self, amount):
-        # if not enough
-        if amount > self.total_amount:
-            return False
-        return True
+        """
+        Check if there are sufficient funds for a transaction.
 
-    # deposit amount into category
+        Parameters:
+            amount (float): Amount to be checked.
+
+        Returns:
+            bool: True if enough funds are available, otherwise False.
+        """
+        return amount <= self.total_amount
+
+    # ------------------------------------------------
+    # Transaction methods
+    # ------------------------------------------------
     def deposit(self, amount, description=None):
-        # check if there is description or not
-        if description is not None:
-            self.dict = {"amount": amount, "description": description}
-        else:
-            self.dict = {"amount": amount, "description": ""}
+        """
+        Deposit money into the category.
 
-        self.ledger.append(self.dict)
+        Parameters:
+            amount (float): Amount to deposit.
+            description (str, optional): Description of the transaction.
+        """
+        entry = {
+            "amount": amount,
+            "description": description if description is not None else ""
+        }
+
+        self.ledger.append(entry)
         self.total_amount += amount
 
-    # withdraw amount from category
     def withdraw(self, amount, description=None):
+        """
+        Withdraw money from the category if sufficient funds exist.
 
-        # first check if there is enough money to withdraw
-        yes = self.check_funds(amount)
-        if yes:
-            # check for description
-            if description is not None:
-                self.dict = {"amount": -amount, "description": description}
-            else:
-                self.dict = {"amount": -amount, "description": ""}
+        Parameters:
+            amount (float): Amount to withdraw.
+            description (str, optional): Description of the transaction.
 
-            self.ledger.append(self.dict)
-            self.total_amount -= amount
-            self.withdraw_amount += amount
-            return True
-        # just return false if not enough
-        return False
+        Returns:
+            bool: True if withdrawal was successful, otherwise False.
+        """
+        if not self.check_funds(amount):
+            return False
 
-    # transfer money from a category to another
+        entry = {
+            "amount": -amount,
+            "description": description if description is not None else ""
+        }
+
+        self.ledger.append(entry)
+        self.total_amount -= amount
+        self.withdraw_amount += amount
+        return True
+
     def transfer(self, amount, category):
-        # check if there is enough funds
-        yes = self.check_funds(amount)
-        if yes:
-            # for the category than transfers the money
-            self.dict = {"amount": -amount, "description": "Transfer to " + str(category.name).capitalize()}
-            self.ledger.append(self.dict)
-            self.total_amount -= amount
-            self.withdraw_amount += amount
+        """
+        Transfer money from this category to another category.
 
-            # for the category that receives the money
-            category.dict = {"amount": amount, "description": "Transfer from " + str(self.name).capitalize()}
-            category.ledger.append(category.dict)
-            category.total_amount += amount
-            return True
-        # return false if not enough
-        return False
+        Parameters:
+            amount (float): Amount to transfer.
+            category (Category): Target category.
 
-    # get the total balance (after deposit, withdraw, transfer)
+        Returns:
+            bool: True if transfer was successful, otherwise False.
+        """
+        if not self.check_funds(amount):
+            return False
+
+        # Record withdrawal from current category
+        self.ledger.append({
+            "amount": -amount,
+            "description": f"Transfer to {category.name.capitalize()}"
+        })
+        self.total_amount -= amount
+        self.withdraw_amount += amount
+
+        # Record deposit into target category
+        category.ledger.append({
+            "amount": amount,
+            "description": f"Transfer from {self.name.capitalize()}"
+        })
+        category.total_amount += amount
+
+        return True
+
+    # ------------------------------------------------
+    # Accessors and string representation
+    # ------------------------------------------------
     def get_balance(self):
+        """
+        Return the current balance of the category.
+        """
         return self.total_amount
 
     def __str__(self):
-        title = f"{str(self.name).capitalize():*^30}\n"
-        events = f""
+        """
+        Return a formatted string representation of the ledger.
+        """
+        title = f"{self.name.capitalize():*^30}\n"
+        body = ""
 
-        for i in range(len(self.ledger)):
-            description = self.ledger[i]['description'][:23] # the description only contain 23 words
-            amount = self.ledger[i]['amount']
-            # alignment for the amount(right align)
-            align = 30 - len(str(description)) - len(str(".2f".format(amount))) + 2
-            events += f"{description} {amount:>{align}.2f}\n" # the amount with 2 decimal in every amount
-        last = f"Total: {self.get_balance():.2f}"
-        output = title + events + last
+        for item in self.ledger:
+            description = item["description"][:23]
+            amount = item["amount"]
 
-        return output
+            # Align amount to the right with two decimal places
+            body += f"{description:<23}{amount:>7.2f}\n"
+
+        total = f"Total: {self.get_balance():.2f}"
+        return title + body + total
 
 
 def create_spend_chart(categories):
-    line1 = "Percentage spent by category\n"
-    line2 = ""
-    line3 = ""
-    line4 = ""
+    """
+    Create a bar chart showing the percentage spent by each category.
 
-    total_with_amt = 0
-    # to get the total withdraw amount from every category
-    for name in categories:
-        total_with_amt += name.withdraw_amount
+    Parameters:
+        categories (list): A list of Category objects.
 
-    bar_of_zeros = []
-    for name in categories:
-        # calculate the amount of "o" for every category
-        percentage = ((name.withdraw_amount / total_with_amt) * 100) // 10 + 1
-        zeros = int(percentage) * "o"
-        output = zeros.rjust(11)  # right align all the "o" so that it starts from bottom of the chart
-        bar_of_zeros.append(output)
+    Returns:
+        str: A formatted percentage spend chart.
+    """
 
-    # making the bar chart containing number , "|", "o"
-    for i, nums in enumerate(range(100, -10, -10)):
-        line2 += f"{nums:>3}| " + "  ".join([zero[i] for zero in bar_of_zeros]) + "  \n"
+    # Chart title
+    chart = "Percentage spent by category\n"
 
-    # calculate the dashes that are needed
-    dashes = "-" * (len(categories) * 3 + 1)
-    align = len(dashes) + 4  # right align the dashes
-    line3 += dashes.rjust(align) + "\n"
+    # ------------------------------------------------
+    # Calculate total withdrawals
+    # ------------------------------------------------
+    total_withdrawals = sum(cat.withdraw_amount for cat in categories)
 
-    new_catgr_names = []
-    for category in categories:
-        new_catgr_names.append(str(category.name).capitalize())
+    # Calculate percentage spent for each category (rounded down to nearest 10)
+    percentages = [
+        int((cat.withdraw_amount / total_withdrawals) * 100) // 10 * 10
+        for cat in categories
+    ]
 
-    # getting the longest lenght for the names of category
-    max_len = max([len(str(category.name)) for category in categories])
-    # add spaces to names that are not longest
+    # ------------------------------------------------
+    # Build vertical bar chart
+    # ------------------------------------------------
+    for level in range(100, -1, -10):
+        chart += f"{level:>3}| "
+        for pct in percentages:
+            chart += "o  " if pct >= level else "   "
+        chart += "\n"
+
+    # ------------------------------------------------
+    # Add horizontal divider
+    # ------------------------------------------------
+    chart += "    " + "-" * (len(categories) * 3 + 1) + "\n"
+
+    # ------------------------------------------------
+    # Add category labels vertically
+    # ------------------------------------------------
+    names = [cat.name.capitalize() for cat in categories]
+    max_len = max(len(name) for name in names)
+
     for i in range(max_len):
-        nameStr = "     "
-        for category in new_catgr_names:
-            if i >= len(category):
-                nameStr += "   "
-            else:
-                nameStr += category[i] + "  "
-        nameStr += "\n"
-        line4 += nameStr
+        chart += "     "
+        for name in names:
+            chart += f"{name[i] if i < len(name) else ' '}  "
+        chart += "\n"
 
-    final_output = line1.lstrip() + line2 + line3 + line4
-    return final_output.rstrip("\n")
+    return chart.rstrip("\n")
