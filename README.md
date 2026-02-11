@@ -83,3 +83,7 @@ These projects were built as part of my Python learning journey to:
 * Improve modular structure
 * Add CLI interface
 * Convert some projects into small web apps
+
+---
+
+## 👤 About Me
