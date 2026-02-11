@@ -64,6 +64,18 @@ These projects were built as part of my Python learning journey to:
 
 ---
 
+## 🛠️ Library Used
+
+* Matplotlib
+* Pandas
+* Numpy
+* Scipy
+* Seaborn
+* Random
+* Copy
+
+---
+
 ## 📈 Future Improvements
 
 * Refactor repetitive logic
