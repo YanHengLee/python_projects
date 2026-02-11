@@ -87,7 +87,7 @@ These projects were built as part of my Python learning journey to:
 ---
 
 ## 🛡️Liscense
-This project is licensed under [MIT License](MIT LICENSE). You are free to use, and share this project with proper attribution.
+This project is licensed under [MIT License](LICENSE). You are free to use, and share this project with proper attribution.
 
 ---
 
